@@ -1,0 +1,29 @@
+{
+  "enabledMcpjsonServers": [
+    "optimus_security"
+  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel)\" && bash .claude/optimus_init_claude.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel)\" && cat .claude/rules/optimus_rules_claude.mdc"
+          }
+        ]
+      }
+    ]
+  }
+}
