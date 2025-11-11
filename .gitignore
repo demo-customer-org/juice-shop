@@ -66,3 +66,4 @@ config/*.yml
 # System Files
 .DS_Store
 .optimus/config_cursor.json
+.optimus/config_claude.json
