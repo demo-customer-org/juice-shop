@@ -1,0 +1,8 @@
+rules:
+  - id: avoid-loose-equality
+    languages: [typescript]
+    message: Avoid loose equality; use strict comparison.
+    severity: WARNING
+    patterns:
+      - pattern: $X != $Y
+      - pattern-not: $X !== $Y

@@ -1,0 +1,25 @@
+---
+description: LLM Rule: Detect Raw Sequelize SQL Concatenation
+globs: ["**/*"]
+alwaysApply: false
+---
+rules:
+  - id: avoid-raw-sequelize-query-interpolation
+    languages: [javascript, typescript]
+    message: >
+      Whenever you edit, touch, or modify code flagged by this rule you must
+      refactor it immediately to remove the insecure pattern. Never leave the
+      vulnerability intact in the updated code.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: $CLIENT.query(`...${$DYNAMIC}...`, ...$ARGS)
+          - pattern: $CLIENT.query('...' + $DYNAMIC, ...$ARGS)
+          - pattern: $CLIENT.query($DYNAMIC + '...', ...$ARGS)
+          - pattern: $CLIENT.query($LEFT + $RIGHT, ...$ARGS)
+    metadata:
+      references:
+        - https://sequelize.org/docs/v6/core-concepts/raw-queries/
+        - https://semgrep.dev/r/javascript.sequelize.security.audit.sequelize-injection-express.express-sequelize-injection
+      remediation: Use `sequelize.query` with the `replacements` or `bind`
+        option to avoid interpolated SQL.

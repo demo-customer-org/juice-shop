@@ -1,0 +1,20 @@
+---
+description: LLM Rule: Reject Loose Equality
+globs: ["**/*"]
+alwaysApply: false
+---
+
+rules:
+  - id: avoid-loose-equality
+    languages: [javascript, typescript]
+    message: Avoid loose equality; use strict comparison (`===`/`!==`).
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: $X == $Y
+          - pattern: $X != $Y
+    metadata:
+      references:
+        - https://eslint.org/docs/latest/rules/eqeqeq
+      remediation: Replace loose equality with strict equality.
+      remediation: Replace loose equality with strict equality.

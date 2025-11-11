@@ -1,0 +1,28 @@
+---
+description: Provides an indexed list of rule descriptions so the LLM can look up and announce which rule to apply.
+alwaysApply: true
+---
+
+# WORKFLOW STEPS
+**1: Search matching rules:** When a rule listed below applies to the current prompt, load the rule definition from its path.
+**2: Print rule to window**: Before executing any instruction from the loaded rule, **always** echo in the chat window `Applying rule: <rule description>` in the assistant response."
+**3: Apply the rule** Follow every instruction in the loaded rule after the announcement.
+**4: Apply for every rule**: If multiple rules trigger, repeat steps 2–3 for each rule in list order, emitting one announcement per rule.
+
+# PARAMETER DESCRIPTIONS
+**description: Text explaining when the rule should be invoked and what must be echoed to the chat.**
+**path: Relative location of the rule definition to load when needed.**
+
+# MAPPING OF RULES TO DESCRIPTIONS
+**description**: "Use this rule whenever you encounter JavaScript or TypeScript equality comparisons to ensure they use strict ===/!== instead of loose ==/!="
+**path**: ".cursor/rules/reject-loose-equality.mdc"
+**description**: "Use this rule whenever you encounter raw Sequelize SQL built via string concatenation or template interpolation to ensure parameterized queries are used instead."
+**path**: ".cursor/rules/sequelize-sql-injection.mdc"
+
+# VERFICATION: 
+1) Did you search the mapping of rules descriptions to locations? 
+2) Did you invoke rule when it matched the description? 
+3) Did you print to the chat window any rules that were invoked? 
+
+# REVIEW
+**After the rule has been applied, give the user a summary of how the rule secured the code**
