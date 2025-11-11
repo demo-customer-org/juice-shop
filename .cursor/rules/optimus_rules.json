@@ -1,0 +1,5 @@
+[
+  "Use this rule whenever you encounter JavaScript or TypeScript equality comparisons to ensure they use strict ===/!== instead of loose ==/!=",
+  "Use this rule whenever you encounter raw Sequelize SQL built via string concatenation or template interpolation to ensure parameterized queries are used instead."
+]
+

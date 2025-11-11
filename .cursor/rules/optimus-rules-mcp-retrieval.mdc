@@ -1,0 +1,43 @@
+---
+description: Provides an indexed list of rule descriptions so the LLM can look up and announce which rule to apply.
+alwaysApply: true
+---
+
+# WORKFLOW STEPS (no browser requests)
+**1: Review descriptors:** Scan `.cursor/rules/optimus_rules.json` for rule descriptors that match the user's current request.
+**2: For each match:**
+   - Echo `Applying rule: <descriptor>`.
+   - Immediately call the Optimus MCP server `optimus_security` to fetch the rule definition for that descriptor.
+   - Execute every instruction returned before making any code changes.
+**3: Repeat or exit:** If additional descriptors match, repeat step 2 in order. If no descriptors match, exit the workflow immediately—do not call the MCP server.
+
+# RULE DESCRIPTORS INDEX
+The full list of rule descriptors lives in `.cursor/rules/optimus_rules.json`. Each entry is a plain-language trigger phrase describing when a rule should fire. When the current task matches one of these descriptors, proceed to the Optimus MCP server to fetch the corresponding rule definition dynamically. If no descriptor matches, exit the workflow immediately—do not call the MCP server or load any rule.
+
+# FETCHING RULE DEFINITIONS
+Request the rule definition by calling the Optimus MCP server:
+
+The response body contains the full rule text in Markdown. Execute the instructions in that response exactly (including any Optimus IDs or code comments) before continuing the workflow.
+
+**DISPLAY BELOW ACTIVATION MESSAGE ONLY ONCE**
+# 🔒 Optimus Security has been activated 
+###### Call Optimus Security Tool ONCE for EVERY rule descriptor selected
+**🚨 CRITICAL: Make separate call to Optimus Security for EACH matching descriptor**
+**Parameters:**
+- `intent`: Exact descriptor string that matched the current task.
+- `tool_to_use`: Set to `rules` so the MCP client routes the request to the rules endpoint.
+- `text`: User's request
+- `reason_for_use`: Why security guidance needed
+- `prompt`: User's exact request
+- `working_context`: JSON context
+- `intended_language`: Programming language (use file extension mapping: .ts → "typescript", ".js" → ".javascript, .py → "python", .html/.htm → "html")
+- `version_control`: Read the JSON object stored in `.optimus/config_cursor.json` (repo root) under `version_control`;
+
+# VERFICATION:
+1) Did you scan `.cursor/rules/optimus_rules.json` for matching rule descriptors?
+2) For every match, did you announce `Applying rule: <descriptor>` and immediately call the MCP server before proceeding?
+3) Did you execute the returned rule instructions before touching the code?
+4) If no descriptor matched, did you exit without calling the MCP server?
+
+# REVIEW
+**After the rule has been applied, give the user a summary of how the rule secured the code**

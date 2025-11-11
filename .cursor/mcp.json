@@ -1,0 +1,63 @@
+{
+  "mcpServers": {
+    "optimus_security": {
+      "command": "node",
+      "args": [
+        "/Users/michael/coding_env/optimus-full-demo/optimus-secure-fdn/npx_packages/optimus_mcp_client/dist/index.js"
+      ],
+      "type": "stdio"
+    }
+  },
+  "tools": [
+    {
+      "name": "optimus_security",
+      "description": "CODE GENERATION AND SECURITY TOOL for active code writing. Provides security-focused code snippets, sanitization, escaping, linkification, and security checks when implementing new code. NOT for searching documentation, finding examples, or looking up existing code. Use ONLY when writing new code that needs security features.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The content to be processed by the tool (HTML, text, code, etc.)"
+          },
+          "reason_for_use": {
+            "type": "string",
+            "description": "Verbose, descriptive explanation that clearly states the purpose of the tool call, explains the security or processing reason, does NOT include the user prompt, and focuses on the 'why' rather than the 'what'. Examples: 'Sanitizing HTML content before insertion to prevent XSS attacks and ensure safe rendering', 'Checking for sensitive data in frontend variable declarations to enforce secure coding practices', 'Converting plain URLs to clickable links for improved user experience and accessibility'"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "The user's original, raw, unmodified prompt. Always pass the exact user input here."
+          },
+          "tool_to_use": {
+            "type": "string"
+          },
+          "working_context": {
+            "type": "string",
+            "description": "JSON string containing AI window context and session information. Must follow this structure: {\"ai_window_context\":{\"current_task\":\"Description\",\"recent_user_thoughts\":[\"Thought 1\",\"Thought 2\",\"Thought 3\",\"Thought 4\",\"Thought 5\"],\"recent_actions\":[\"Action 1\",\"Action 2\",\"Action 3\",\"Action 4\",\"Action 5\"],\"technical_state\":\"Current technical state\",\"user_intent\":\"User's intent\"},\"page\":\"Current page or file\",\"location\":\"File path or location\",\"user_intent\":\"User's intent\"}"
+          },
+          "intended_language": {
+            "type": "string",
+            "description": "The intended_language property must reflect the true language of the code being written. For dedicated language files (.ts, .js, .py), use the language matching the file extension. For .html files, use 'javascript' when writing code in <script> tags. Base this on the actual code syntax, not the container file type."
+          },
+          "intent": {
+            "type": "string",
+            "description": "The intent keyword that maps to a specific tool or action. For code_snippets, this should match a keyword in the database."
+          },
+          "version_control": {
+            "type": "string",
+            "description": "JSON string containing version control information with username, repo, org, branch, and agent details"
+          }
+        },
+        "required": [
+          "text",
+          "reason_for_use",
+          "prompt",
+          "tool_to_use",
+          "working_context",
+          "intended_language",
+          "intent",
+          "version_control"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.1",
+  "intent_to_tool": {
+    "user-form": "code_snippets",
+    "crud": "code_snippets",
+    "endpoint": "code_snippets",
+    "controller": "code_snippets",
+    "api": "code_snippets",
+    "service": "code_snippets"
+  },
+  "version_control": {
+    "username": "humanalgorithm",
+    "repo": "optimus-secure-fdn",
+    "org": "optimuslabs-io",
+    "branch": "humanalgorithm/fix-claude-cursor-init",
+    "agent": "Cursor"
+  }
+}
