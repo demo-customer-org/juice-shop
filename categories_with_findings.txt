@@ -1,0 +1,70 @@
+category: Hardcoded Secrets
+risks:
+  - generic.secrets.security.detected-generic-secret.detected-generic-secret
+  - generic.secrets.security.detected-jwt-token.detected-jwt-token
+  - javascript.jsonwebtoken.security.jwt-hardcode.hardcoded-jwt-secret
+findings:
+  - data/static/users.yml:150 - Generic Secret detected
+  - frontend/src/app/app.guard.spec.ts:38 - JWT token detected
+  - lib/insecurity.ts:56 - A hard-coded credential was detected. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module).
+
+category: Missing Subresource Integrity
+risks:
+  - html.security.audit.missing-integrity.missing-integrity
+findings:
+  - frontend/src/index.html:14 - This tag is missing an 'integrity' subresource integrity attribute. The 'integrity' attribute allows for the browser to verify that externally hosted files (for example from a CDN) are delivered without unexpected manipulation. Without this attribute, if an attacker can modify the externally hosted resource, this could lead to XSS and other types of attacks. To prevent this, include the base64-encoded cryptographic hash of the resource (file) you’re telling the browser to fetch in the 'integrity' attribute for all externally hosted files.
+
+category: Ineffective XSS Sanitization
+risks:
+  - javascript.audit.detect-replaceall-sanitization.detect-replaceall-sanitization
+findings:
+  - data/static/codefixes/restfulXssChallenge_2.ts:62 - Detected a call to `replaceAll()` in an attempt to HTML escape the string `tableData[i].description`. Manually sanitizing input through a manually built list can be circumvented in many situations, and it's better to use a well known sanitization library such as `sanitize-html` or `DOMPurify`.
+  - data/static/codefixes/restfulXssChallenge_2.ts:62 - Detected a call to `replaceAll()` in an attempt to HTML escape the string `tableData[i].description.replaceAll('<', '&lt;')`. Manually sanitizing input through a manually built list can be circumvented in many situations, and it's better to use a well known sanitization library such as `sanitize-html` or `DOMPurify`.
+
+category: Insecure Browser API Usage
+risks:
+  - javascript.browser.security.eval-detected.eval-detected
+  - javascript.browser.security.insecure-document-method.insecure-document-method
+findings:
+  - routes/captcha.ts:23 - Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.
+  - frontend/src/assets/private/three.js:11375 - User controlled data in methods like `innerHTML`, `outerHTML` or `document.write` is an anti-pattern that can lead to XSS vulnerabilities
+
+category: Express.js Framework Vulnerabilities
+risks:
+  - javascript.express.security.audit.express-check-directory-listing.express-check-directory-listing
+  - javascript.express.security.audit.express-detect-notevil-usage.express-detect-notevil-usage
+  - javascript.express.security.audit.express-libxml-vm-noent.express-libxml-vm-noent
+  - javascript.express.security.audit.express-open-redirect.express-open-redirect
+  - javascript.express.security.audit.express-res-sendfile.express-res-sendfile
+  - javascript.express.security.audit.xss.pug.explicit-unescape.template-explicit-unescape
+  - javascript.express.security.injection.raw-html-format.raw-html-format
+findings:
+  - server.ts:269 - Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and files. It is recommended to disable directory listing unless it is a public resource. If you need directory listing, ensure that sensitive files are inaccessible when querying the resource.
+  - routes/b2bOrder.ts:23 - Detected usage of the `notevil` package, which is unmaintained and has vulnerabilities. Using any sort of `eval()` functionality can be very dangerous, but if you must, the `eval` package is an up to date alternative. Be sure that only trusted input reaches an `eval()` function.
+  - routes/fileUpload.ts:83 - Detected use of parseXml() function with the `noent` field set to `true`. This can lead to an XML External Entities (XXE) attack if untrusted data is passed into it.
+  - routes/redirect.ts:19 - The application redirects to a URL specified by user-supplied input `query` that is not validated. This could redirect users to malicious locations. Consider using an allow-list approach to validate URLs, or warn users they are being redirected to a third-party website.
+  - routes/fileServer.ts:33 - The application processes user-input, this is passed to res.sendFile which can allow an attacker to arbitrarily read files on the system through path traversal. It is recommended to perform input validation in addition to canonicalizing the path. This allows you to validate the path against the intended directory it should be accessing.
+  - views/promotionVideo.pug:79 - Detected an explicit unescape in a Pug template, using either '!=' or '!{...}'. If external data can reach these locations, your application is exposed to a cross-site scripting (XSS) vulnerability. If you must do this, ensure no external data can reach this location.
+  - routes/chatbot.ts:197 - User data flows into the host portion of this manually-constructed HTML. This can introduce a Cross-Site-Scripting (XSS) vulnerability if this comes from user-provided input. Consider using a sanitization library such as DOMPurify to sanitize the HTML within.
+
+category: General JavaScript Language-Level Risks
+risks:
+  - javascript.lang.security.audit.code-string-concat.code-string-concat
+  - javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
+  - javascript.lang.security.audit.hardcoded-hmac-key.hardcoded-hmac-key
+  - javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
+  - javascript.lang.security.audit.unknown-value-with-script-tag.unknown-value-with-script-tag
+  - javascript.lang.security.audit.unsafe-formatstring.unsafe-formatstring
+findings:
+  - routes/userProfile.ts:62 - Found data from an Express or Next web request flowing to `eval`. If this data is user-controllable this can lead to execution of arbitrary system commands in the context of your application process. Avoid `eval` whenever possible.
+  - lib/codingChallenges.ts:76 - RegExp() called with a `challengeKey` function argument, this might allow an attacker to cause a Regular Expression Denial-of-Service (ReDoS) within your application as RegExP blocks the main thread. For this reason, it is recommended to use hardcoded regexes instead. If your regex is run on user-controlled input, consider performing input validation or use a regex checking/sanitization library such as https://www.npmjs.com/package/recheck to verify that the regex does not appear vulnerable to ReDoS.
+  - lib/insecurity.ts:44 - Detected a hardcoded hmac key. Avoid hardcoding secrets and consider using an alternate option such as reading the secret from a config file or using an environment variable.
+  - frontend/src/hacking-instructor/helpers/helpers.ts:38 - Possibility of prototype polluting function detected. By adding or modifying attributes of an object prototype, it is possible to create attributes that exist on every object, or replace critical attributes with malicious ones. This can be problematic if the software depends on existence or non-existence of certain attributes, or uses pre-defined attributes of object prototype (such as hasOwnProperty, toString or valueOf). Possible mitigations might be: freezing the object prototype, using an object without prototypes (via Object.create(null) ), blocking modifications of attributes that resolve to object prototype, using Map instead of object.
+  - routes/videoHandler.ts:58 - Cannot determine what 'subs' is and it is used with a '<script>' tag. This could be susceptible to cross-site scripting (XSS). Ensure 'subs' is not externally controlled, or sanitize this data.
+  - server.ts:155 - Detected string concatenation with a non-literal variable in a util.format / console.log function. If an attacker injects a format specifier in the string, it will forge the log message. Try to use constant values for the format string.
+
+category: Sequelize SQL Injection
+risks:
+  - javascript.sequelize.security.audit.sequelize-injection-express.express-sequelize-injection
+findings:
+  - data/static/codefixes/dbSchemaChallenge_1.ts:5 - Detected a sequelize statement that is tainted by user-input. This could lead to SQL injection if the variable is user-controlled and is not properly sanitized. In order to prevent SQL injection, it is recommended to use parameterized queries or prepared statements.

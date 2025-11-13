@@ -1,10 +1,12 @@
 ---
-description: LLM Rule: Detect Raw Sequelize SQL Concatenation
+description: "LLM Rule: Detect Raw Sequelize SQL Concatenation"
 globs: ["**/*"]
 alwaysApply: false
 ---
+
+Disallows building raw Sequelize queries with string concatenation or template literals to prevent SQL injection.
 rules:
-  - id: avoid-raw-sequelize-query-interpolation
+  - id: sequelize-raw-query-injection
     languages: [javascript, typescript]
     message: >
       Whenever you edit, touch, or modify code flagged by this rule you must
@@ -13,13 +15,23 @@ rules:
     severity: ERROR
     patterns:
       - pattern-either:
-          - pattern: $CLIENT.query(`...${$DYNAMIC}...`, ...$ARGS)
-          - pattern: $CLIENT.query('...' + $DYNAMIC, ...$ARGS)
-          - pattern: $CLIENT.query($DYNAMIC + '...', ...$ARGS)
-          - pattern: $CLIENT.query($LEFT + $RIGHT, ...$ARGS)
+          - pattern: $DB.query(`...${...}...`)
+          - pattern: $DB.query(... + ...)
     metadata:
       references:
-        - https://sequelize.org/docs/v6/core-concepts/raw-queries/
-        - https://semgrep.dev/r/javascript.sequelize.security.audit.sequelize-injection-express.express-sequelize-injection
-      remediation: Use `sequelize.query` with the `replacements` or `bind`
-        option to avoid interpolated SQL.
+        - https://sequelize.org/docs/v6/core-concepts/raw-queries/#replacements
+        - https://sg.run/gjoe
+      remediation: >
+        To prevent SQL injection, use parameterized queries by passing a `replacements` object
+        in the options argument of `sequelize.query()`. Avoid constructing SQL queries using
+        string concatenation (+) or template literals (`...${...}`).
+
+
+        For named parameters, use a colon prefix (e.g., `:status`) in the SQL string and provide
+        their values in an object: `sequelize.query('SELECT * FROM projects WHERE status = :status', {
+        replacements: { status: 'active' } })`.
+
+
+        For positional parameters, use a question mark (?) as a placeholder in the SQL string and
+        provide the values in an array: `sequelize.query('SELECT * FROM users WHERE id = ?', {
+        replacements: [123] })`.
